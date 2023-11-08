@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useState } from 'react'
 import axios from 'axios'
 import { create, remove, update } from './services/PhoneBook'
-import Notification from "./components/Notification";
+import Notification from './components/Notification';
 
 // const initialPersons = [
 //   { name: 'Arto Hellas', number: '040-123456', id: 1 },
@@ -71,7 +71,7 @@ const PhoneBookApp = () => {
   const [persons, setPersons] = useState([])
   const [user, setUser] = useState(initialState)
   const [filter, setFilter] = useState('')
-  const [errorMessage, setErrorMessage] = useState('Some Error Happened...')
+  const [message, setMessage] = useState(null)
 
   const filteredPersons =
     filter.length === 0
@@ -99,18 +99,19 @@ const PhoneBookApp = () => {
       if (
         window.confirm(
           `${user.name} is already added to phonebook, replace the old number with a new one?`
-        ) == false
+        ) === false
       )
         return
       update(person.id, {...person, number: user.number}).then((response) => {
         setPersons(persons.map(p => p.id !== person.id ? p : response))
-        console.log(response)
-        console.log(persons)
+        setMessage(`Modified ${person.name}`)
+        setTimeout(() => setMessage(null), 2000)
       })
     } else {
       create(user).then((data) => {
-        console.log(data)
         setPersons(persons.concat(data))
+        setMessage(`Added ${data.name}`)
+        setTimeout(() => setMessage(null), 2000)
       })
     }
   }
@@ -124,18 +125,18 @@ const PhoneBookApp = () => {
   }
 
   const handleRemove = (id) => {
-    const user = persons.find((p) => p.id == id)
-    if (window.confirm(`Delete ${user.name} ?`) == false) return
+    const user = persons.find((p) => p.id === id)
+    if (window.confirm(`Delete ${user.name} ?`) === false) return
 
     remove(id).then((response) => {
       console.log(response)
-      setPersons(persons.filter((person) => person.id != id))
+      setPersons(persons.filter((person) => person.id !== id))
     })
   }
 
   return (
     <div>
-
+      <Notification className="info" message={message} />
       <h2>Phonebook</h2>
       <Filter onFilterChange={onFilterChange} />
 

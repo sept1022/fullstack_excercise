@@ -1,4 +1,4 @@
-import {Fragment, useEffect, useState} from 'react'
+import { Fragment, useEffect, useState } from 'react'
 
 function randInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + 1
@@ -20,13 +20,18 @@ const AnecdotesApp = () => {
     'The only way to go fast, is to go well.',
   ]
 
-  const [votes, setVotes] = useState(Object.assign({}, anecdotes.map((item, index) => (index, 0))))
+  const [votes, setVotes] = useState(
+    Object.assign(
+      {},
+      anecdotes.map((item, index) => (index, 0))
+    )
+  )
   const [selected, setSelected] = useState(0)
   const [maxIndex, setMaxIndex] = useState(0)
 
   useEffect(() => {
     setMaxIndex(getMaxIndex(Object.values(votes)))
-  }, [votes]);
+  }, [votes])
 
   return (
     <Fragment>
@@ -36,7 +41,7 @@ const AnecdotesApp = () => {
       <div>
         <button
           onClick={() => {
-            setVotes({...votes, [selected]: votes[selected] + 1})
+            setVotes({ ...votes, [selected]: votes[selected] + 1 })
             console.log(votes)
           }}
         >
@@ -54,9 +59,7 @@ const AnecdotesApp = () => {
       </div>
       <div>
         <h3>Anecdote with most votes</h3>
-        <div>{
-          anecdotes[maxIndex]
-        }</div>
+        <div>{anecdotes[maxIndex]}</div>
         <div>has {votes[maxIndex]} votes</div>
       </div>
     </Fragment>

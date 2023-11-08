@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react'
-import Note from './components/Note'
-import axios from 'axios'
-import noteService from './services/Note'
-import Notification from "./components/Notification";
-import Footer from "./components/Footer";
+import { useEffect, useState } from 'react';
+import Note from './components/Note';
+import noteService from './services/Note';
+import Notification from './components/Notification';
+import Footer from './components/Footer';
 
 // const initialNotes = [
 //   {
@@ -24,68 +23,72 @@ import Footer from "./components/Footer";
 // ]
 
 const NoteApp = () => {
-  const [notes, setNotes] = useState([])
-  const [newNote, setNewNote] = useState('a new note...')
-  const [showAll, setShowAll] = useState(false)
-  const [errorMessage, setErrorMessage] = useState(null)
-
-  const noteToShow = showAll ? notes : notes.filter((note) => note.important)
+  const [notes, setNotes] = useState(null);
+  const [newNote, setNewNote] = useState('a new note...');
+  const [showAll, setShowAll] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
-    console.log('effect')
+    console.log('effect');
     // axios.get('http://localhost:3001/notes')
     noteService.getAll()
     .then((data) => {
-      console.log('promise fulfilled')
-      console.log(data)
-      setNotes(data)
-    })
-    console.log('render', notes.length, 'notes')
-  }, [])
+      console.log('promise fulfilled');
+      console.log(data);
+      setNotes(data);
+    });
+    console.log('render', notes.length, 'notes');
+  }, []);
+
+	if(notes === null) {
+		return;
+	}
+
+	const noteToShow = showAll ? notes : notes.filter((note) => note.important);
 
   const addNote = (e) => {
-    e.preventDefault()
-    console.log(e.target)
+    e.preventDefault();
+    console.log(e.target);
     const obj = {
       content: newNote,
       important: Math.random() < 0.5,
       // id: notes.length + 1,
-    }
+    };
     // setNotes(notes.concat(obj))
 
     // axios.post('http://localhost:3001/notes', obj)
     noteService.create(obj)
     .then((response) => {
       // console.log(response)
-      setNotes(notes.concat(response))
-      setNewNote('')
-    })
-  }
+      setNotes(notes.concat(response));
+      setNewNote('');
+    });
+  };
 
   const handleInputChange = (e) => {
-    console.log(e.target.value)
-    setNewNote(e.target.value)
-  }
+    console.log(e.target.value);
+    setNewNote(e.target.value);
+  };
 
   const handleToggleImportance = (id) => {
     // console.log(id)
 
-    const url = `http://localhost:3001/notes/${id}`
-    const note = notes.find(note => note.id === id)
-    const changedNote = {...note, important: !note.important}
+    // const url = `http://localhost:3001/notes/${id}`
+    const note = notes.find(note => note.id === id);
+    const changedNote = {...note, important: !note.important};
 
     // axios.put(url, changedNote)
     noteService.update(id, changedNote)
     .then(response => {
       // console.log(response)
-      setNotes(notes.map(note => note.id != id ? note : response))
+      setNotes(notes.map(note => note.id !== id ? note : response));
     })
     .catch(error => {
-      setErrorMessage(`this note ${note.content} was already deleted from server`)
-      setTimeout(()=> {setErrorMessage(null)}, 3000)
-      setNotes(notes.filter(note => note.id !== id))
-    })
-  }
+      setErrorMessage(`this note ${note.content} was already deleted from server`);
+      setTimeout(()=> {setErrorMessage(null);}, 3000);
+      setNotes(notes.filter(note => note.id !== id));
+    });
+  };
 
   return (
     <div>
@@ -107,7 +110,7 @@ const NoteApp = () => {
       </form>
       <Footer />
     </div>
-  )
-}
+  );
+};
 
-export default NoteApp
+export default NoteApp;
