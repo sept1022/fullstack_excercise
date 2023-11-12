@@ -15,8 +15,8 @@ const App = () => {
       {/*<CourseApp />*/}
       {/*<CurrencyApp />*/}
       {/*<CountryInfoApp />*/}
-      <PhoneBookApp />
-      {/*<NoteApp />*/}
+      {/*<PhoneBookApp />*/}
+      <NoteApp />
     </div>
   )
 }
