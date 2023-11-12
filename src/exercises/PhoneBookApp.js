@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useState } from 'react'
 import axios from 'axios'
-import { create, remove, update } from './services/PhoneBook'
+import {create, getAll, remove, update} from './services/PhoneBook';
 import Notification from './components/Notification';
 
 // const initialPersons = [
@@ -72,6 +72,7 @@ const PhoneBookApp = () => {
   const [user, setUser] = useState(initialState)
   const [filter, setFilter] = useState('')
   const [message, setMessage] = useState(null)
+  const [alertLevel, setAlertLevel] = useState('info');
 
   const filteredPersons =
     filter.length === 0
@@ -82,9 +83,10 @@ const PhoneBookApp = () => {
         )
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then((response) => setPersons(response.data))
+    getAll()
+      .then((response) => {
+        setPersons(response)
+      })
   }, [])
 
   const onFilterChange = (e) => {
@@ -95,6 +97,7 @@ const PhoneBookApp = () => {
     e.preventDefault()
     setUser(initialState)
     const person = persons.find((person) => person.name === user.name)
+    // console.log('person', person)
     if (person) {
       if (
         window.confirm(
@@ -104,15 +107,23 @@ const PhoneBookApp = () => {
         return
       update(person.id, {...person, number: user.number}).then((response) => {
         setPersons(persons.map(p => p.id !== person.id ? p : response))
+        setAlertLevel('info')
         setMessage(`Modified ${person.name}`)
         setTimeout(() => setMessage(null), 2000)
       })
     } else {
-      create(user).then((data) => {
+      create(user)
+        .then((data) => {
         setPersons(persons.concat(data))
+        setAlertLevel('info')
         setMessage(`Added ${data.name}`)
         setTimeout(() => setMessage(null), 2000)
       })
+        .catch(e => {
+          setAlertLevel('error')
+          setMessage(e.response.data.error)
+          setTimeout(() => setMessage(null), 2000)
+        })
     }
   }
 
@@ -129,14 +140,14 @@ const PhoneBookApp = () => {
     if (window.confirm(`Delete ${user.name} ?`) === false) return
 
     remove(id).then((response) => {
-      console.log(response)
+      // console.log(response)
       setPersons(persons.filter((person) => person.id !== id))
     })
   }
 
   return (
     <div>
-      <Notification className="info" message={message} />
+      <Notification className={alertLevel} message={message} />
       <h2>Phonebook</h2>
       <Filter onFilterChange={onFilterChange} />
 

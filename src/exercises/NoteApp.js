@@ -37,7 +37,7 @@ const NoteApp = () => {
       console.log(data);
       setNotes(data);
     });
-    console.log('render', notes.length, 'notes');
+    // console.log('render', notes.length, 'notes');
   }, []);
 
 	if(notes === null) {
